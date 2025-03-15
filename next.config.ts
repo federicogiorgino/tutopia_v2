@@ -1,7 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  typescript: { ignoreBuildErrors: true },
-  eslint: { ignoreBuildErrors: true },
-};
+  tyoescript: { ignoreBuildErrors: true },
+  images: {
+    remotePatterns: [
+      {
+        hostname: 'lh3.googleusercontent.com',
+      },
+      { hostname: 'avatars.githubusercontent.com' },
+    ],
+  },
+}
 
-export default nextConfig;
+export default nextConfig
