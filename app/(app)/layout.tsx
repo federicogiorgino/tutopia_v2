@@ -11,7 +11,7 @@ function AppLayout({
     <>
       <NuqsAdapter>
         <Navbar />
-        {children}
+        <main className="container mx-auto">{children}</main>
       </NuqsAdapter>
     </>
   )
