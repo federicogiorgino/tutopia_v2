@@ -1,5 +1,7 @@
+import { withCompletedProfile } from '@/components/hoc/with-profile'
+
 function HomePage() {
-  return <div>content</div>;
+  return <div>content</div>
 }
 
-export default HomePage;
+export default withCompletedProfile(HomePage)
