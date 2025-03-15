@@ -11,6 +11,7 @@ interface LoginPageProps {
   }
 }
 async function LoginPage({ searchParams }: LoginPageProps) {
+  const { callbackUrl } = await searchParams
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-12 md:p-24">
       <AuthFormWrapper>
@@ -18,13 +19,13 @@ async function LoginPage({ searchParams }: LoginPageProps) {
           title="Tutopia.xyz"
           description="Enter your email address to continue"
         />
-        <EmailInput callbackUrl={searchParams.callbackUrl} />
+        <EmailInput callbackUrl={callbackUrl} />
         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">
             Or
           </span>
         </div>
-        <SocialLoginButtons callbackUrl={searchParams.callbackUrl} />
+        <SocialLoginButtons callbackUrl={callbackUrl} />
       </AuthFormWrapper>
     </div>
   )

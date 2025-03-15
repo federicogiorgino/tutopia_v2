@@ -15,7 +15,7 @@ function withCompletedProfile<P extends object>(
     // If user is logged in but doesn't have name or username
     if (user && (!user.name || !user.username)) {
       // Get the current path for callback
-      const currentPath = props.searchParams?.callbackUrl || '/'
+      const currentPath = (await props.searchParams)?.callbackUrl || '/'
 
       // Redirect to onboarding with callback URL
       redirect(`/onboarding?callbackUrl=${encodeURIComponent(currentPath)}`)
