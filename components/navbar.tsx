@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+import getSession from '@/lib/get-session'
+
 import { Icons } from '@/components/ui/icons'
 
 import { Button } from './ui/button'
@@ -7,7 +9,7 @@ import { UserButton } from './user-button'
 import { auth, signIn } from '@/auth'
 
 async function Navbar() {
-  const session = await auth()
+  const session = await getSession()
   const user = session?.user
 
   return (

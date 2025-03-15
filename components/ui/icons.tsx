@@ -1,9 +1,10 @@
-import { Contrast } from 'lucide-react'
+import { Contrast, Loader } from 'lucide-react'
 
 export type IconProps = React.HTMLAttributes<SVGElement>
 
 const Icons = {
   logo: (props: IconProps) => <Contrast {...props} />,
+  spinner: (props: IconProps) => <Loader {...props} />,
   github: (props: IconProps) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>
       <path
