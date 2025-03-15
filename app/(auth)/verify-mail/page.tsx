@@ -1,18 +1,11 @@
 import { AuthFormHeader } from '../_components/auth-form-header'
 import { AuthFormWrapper } from '../_components/auth-form-wrapper'
 import { Terminal } from 'lucide-react'
-import { redirect } from 'next/navigation'
 
-import getSession from '@/lib/get-session'
-
+import { withoutAuth } from '@/components/hoc/without-auth'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 async function VerifyEmailPage() {
-  const session = await getSession()
-
-  if (session?.user) {
-    redirect('/')
-  }
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-12 md:p-24">
       <AuthFormWrapper>
@@ -33,4 +26,4 @@ async function VerifyEmailPage() {
   )
 }
 
-export default VerifyEmailPage
+export default withoutAuth(VerifyEmailPage)

@@ -2,9 +2,8 @@ import { AuthFormHeader } from '../_components/auth-form-header'
 import { AuthFormWrapper } from '../_components/auth-form-wrapper'
 import { EmailInput } from '../_components/email-input'
 import { SocialLoginButtons } from '../_components/social-login-buttons'
-import { redirect } from 'next/navigation'
 
-import getSession from '@/lib/get-session'
+import { withoutAuth } from '@/components/hoc/without-auth'
 
 interface LoginPageProps {
   searchParams: {
@@ -12,11 +11,6 @@ interface LoginPageProps {
   }
 }
 async function LoginPage({ searchParams }: LoginPageProps) {
-  const session = await getSession()
-
-  if (session?.user) {
-    redirect('/')
-  }
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-12 md:p-24">
       <AuthFormWrapper>
@@ -36,4 +30,4 @@ async function LoginPage({ searchParams }: LoginPageProps) {
   )
 }
 
-export default LoginPage
+export default withoutAuth(LoginPage)
