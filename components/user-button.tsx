@@ -111,15 +111,19 @@ function UserButton({ user }: UserButtonProps) {
             </DropdownMenuItem>
           )}
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <button
-            onClick={() => signOut({ callbackUrl: '/' })}
-            className="flex w-full items-center"
-          >
-            <LogOut className="mr-2 h-4 w-4" /> Sign Out
-          </button>
-        </DropdownMenuItem>
+        {!isMobile ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="flex w-full items-center"
+              >
+                <LogOut className="mr-2 h-4 w-4" /> Sign Out
+              </button>
+            </DropdownMenuItem>
+          </>
+        ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
   )
