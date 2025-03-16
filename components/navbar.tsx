@@ -8,6 +8,7 @@ import { NavLinks } from '@/components/nav-links'
 import { Icons } from '@/components/ui/icons'
 
 import { MobileMenu } from './mobile-menu'
+import { NewPostButton } from './new-post-button'
 import { ThemeToggle } from './theme-toggle'
 import { Button } from './ui/button'
 import { UserButton } from './user-button'
@@ -32,9 +33,7 @@ async function Navbar() {
 
           <div className="flex items-center space-x-4">
             <ThemeToggle />
-            <Button>
-              <Plus />
-            </Button>
+            <NewPostButton />
 
             <div className="hidden lg:flex lg:items-center lg:space-x-2">
               {user ? (
