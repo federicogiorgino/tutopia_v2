@@ -1,5 +1,6 @@
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
+import { Dialogs } from '@/components/dialogs'
 import { Navbar } from '@/components/navbar'
 
 function AppLayout({
@@ -11,7 +12,10 @@ function AppLayout({
     <>
       <NuqsAdapter>
         <Navbar />
-        <main className="container mx-auto">{children}</main>
+        <main className="container mx-auto">
+          <Dialogs />
+          {children}
+        </main>
       </NuqsAdapter>
     </>
   )
