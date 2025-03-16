@@ -26,6 +26,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  posts Post[]
+
   @@map("users")
 }
 
@@ -70,4 +72,51 @@ model VerificationToken {
 
   @@id([identifier, token])
   @@map("verification_tokens")
+}
+
+model Post {
+  id          String     @id @default(cuid())
+  title       String
+  description String
+  externalUrl String
+  creator     String
+  type        PostType   @default(FREE)
+  format      PostFormat @default(OTHERS)
+  level       PostLevel  @default(BEGINNER)
+  language    String
+  year        Int
+  tags        String[]
+
+  approved        Boolean @default(false)
+  pendingApproval Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("posts")
+}
+
+enum PostType {
+  FREE
+  NO_REGISTRATION
+  PAID
+  SUBSCRIPTION
+}
+
+enum PostFormat {
+  VIDEO
+  ARTICLE
+  COURSE
+  OTHERS
+}
+
+enum PostLevel {
+  BEGINNER
+  INTERMEDIATE
+  PROGRESSED
+  ADVANCED
 }
