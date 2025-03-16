@@ -44,6 +44,11 @@ function NewPostForm() {
   const form = useForm<NewPostValues>({
     resolver: zodResolver(postSchema),
     defaultValues: {
+      creator: '',
+      title: '',
+      description: '',
+      externalUrl: '',
+      language: 'english',
       type: PostType.FREE,
       format: PostFormat.OTHERS,
       level: PostLevel.BEGINNER,
@@ -94,7 +99,7 @@ function NewPostForm() {
                 </span>
               </div>
               <div className="text-right">
-                <span className="text-primary inline-block text-xs font-semibold">
+                <span className="inline-block text-xs font-semibold">
                   {Math.round(
                     (currentStep / (NEW_POST_FORM_STEPS.length - 1)) * 100
                   )}
@@ -185,7 +190,7 @@ function NewPostForm() {
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <FormControl>
+                    <FormControl className="w-full">
                       <SelectTrigger>
                         <SelectValue placeholder="Select post type" />
                       </SelectTrigger>
@@ -215,7 +220,7 @@ function NewPostForm() {
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <FormControl>
+                    <FormControl className="w-full">
                       <SelectTrigger>
                         <SelectValue placeholder="Select post format" />
                       </SelectTrigger>
@@ -247,7 +252,7 @@ function NewPostForm() {
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <FormControl>
+                    <FormControl className="w-full">
                       <SelectTrigger>
                         <SelectValue placeholder="Select post level" />
                       </SelectTrigger>
@@ -280,14 +285,14 @@ function NewPostForm() {
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <FormControl>
+                      <FormControl className="w-full">
                         <SelectTrigger>
                           <SelectValue placeholder="Select post language" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {LANGUAGES.map((language) => (
-                          <SelectItem value={language}>
+                        {LANGUAGES.map((language, i) => (
+                          <SelectItem value={language} key={i}>
                             {capitalizeFirstLetter(language)}
                           </SelectItem>
                         ))}
@@ -304,7 +309,7 @@ function NewPostForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Year</FormLabel>
-                  <FormControl>
+                  <FormControl className="w-full">
                     <Input
                       type="number"
                       {...field}
@@ -357,7 +362,7 @@ function NewPostForm() {
             </Button>
           )}
           {currentStep === NEW_POST_FORM_STEPS.length - 1 && (
-            <LoadingButton type="submit" disabled={!form.formState.isValid}>
+            <LoadingButton type="submit">
               {form.formState.isSubmitting ? 'Saving...' : 'Save'}
             </LoadingButton>
           )}
