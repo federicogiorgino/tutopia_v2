@@ -1,5 +1,8 @@
 'use server'
 
+import { PostFormat, PostLevel, PostType } from '@prisma/client'
+
+import { postDataInclude } from '@/lib/db'
 import getSession from '@/lib/get-session'
 import { prisma } from '@/lib/prisma'
 
@@ -44,5 +47,159 @@ export const createPost = async (data: NewPostValues) => {
     return { status: 'success', message: 'Post created successfully' }
   } catch (error) {
     return { status: 'error', error: 'Failed to create post' }
+  }
+}
+
+export const getFilters = async (q?: string) => {
+  try {
+    const baseWhere = q
+      ? {
+          OR: [
+            { title: { contains: q, mode: 'insensitive' } },
+            { description: { contains: q, mode: 'insensitive' } },
+          ],
+        }
+      : {}
+
+    // Get counts for each filter value
+    const [typeCount, formatCount, levelCount, languageCount] =
+      await Promise.all([
+        prisma.post.groupBy({
+          by: ['type'],
+          where: q
+            ? {
+                OR: [
+                  { title: { contains: q, mode: 'insensitive' } },
+                  { description: { contains: q, mode: 'insensitive' } },
+                ],
+              }
+            : {},
+          _count: true,
+        }),
+        prisma.post.groupBy({
+          by: ['format'],
+          where: q
+            ? {
+                OR: [
+                  { title: { contains: q, mode: 'insensitive' } },
+                  { description: { contains: q, mode: 'insensitive' } },
+                ],
+              }
+            : {},
+          _count: true,
+        }),
+        prisma.post.groupBy({
+          by: ['level'],
+          where: q
+            ? {
+                OR: [
+                  { title: { contains: q, mode: 'insensitive' } },
+                  { description: { contains: q, mode: 'insensitive' } },
+                ],
+              }
+            : {},
+          _count: true,
+        }),
+        prisma.post.groupBy({
+          by: ['language'],
+          where: q
+            ? {
+                OR: [
+                  { title: { contains: q, mode: 'insensitive' } },
+                  { description: { contains: q, mode: 'insensitive' } },
+                ],
+              }
+            : {},
+          _count: true,
+        }),
+      ])
+
+    return {
+      status: 'success',
+      data: {
+        types: typeCount.map((t) => ({ value: t.type, count: t._count })),
+        formats: formatCount.map((f) => ({ value: f.format, count: f._count })),
+        levels: levelCount.map((l) => ({ value: l.level, count: l._count })),
+        languages: languageCount.map((l) => ({
+          value: l.language,
+          count: l._count,
+        })),
+      },
+    }
+  } catch (error) {
+    return { status: 'error', error: 'Failed to get filters' }
+  }
+}
+
+export const getPosts = async (
+  filters: {
+    q: string
+    type: PostType | ''
+    format: PostFormat | ''
+    level: PostLevel | ''
+    language: string
+  },
+  page: number,
+  perPage: number
+) => {
+  try {
+    // Get paginated posts with filters
+    const [results, totalCount] = await Promise.all([
+      prisma.post.findMany({
+        where: {
+          AND: [
+            filters.q
+              ? {
+                  OR: [
+                    { title: { contains: filters.q, mode: 'insensitive' } },
+                    {
+                      description: { contains: filters.q, mode: 'insensitive' },
+                    },
+                  ],
+                }
+              : {},
+            filters.type ? { type: filters.type as PostType } : {},
+            filters.format ? { format: filters.format as PostFormat } : {},
+            filters.level ? { level: filters.level as PostLevel } : {},
+            filters.language ? { language: filters.language } : {},
+          ],
+        },
+        skip: (page - 1) * perPage,
+        take: perPage,
+        include: postDataInclude,
+      }),
+
+      // Get total count for pagination
+      prisma.post.count({
+        where: {
+          AND: [
+            filters.q
+              ? {
+                  OR: [
+                    { title: { contains: filters.q, mode: 'insensitive' } },
+                    {
+                      description: { contains: filters.q, mode: 'insensitive' },
+                    },
+                  ],
+                }
+              : {},
+            filters.type ? { type: filters.type as PostType } : {},
+            filters.format ? { format: filters.format as PostFormat } : {},
+            filters.level ? { level: filters.level as PostLevel } : {},
+            filters.language ? { language: filters.language } : {},
+          ],
+        },
+      }),
+    ])
+
+    return {
+      status: 'success',
+      data: {
+        posts: results,
+        totalPages: Math.ceil(totalCount / perPage),
+      },
+    }
+  } catch (error) {
+    return { status: 'error', error: 'Failed to get posts' }
   }
 }
