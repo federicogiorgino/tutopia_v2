@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { SessionProvider } from 'next-auth/react'
 import { Inter } from 'next/font/google'
 
+import { cn } from '@/lib/utils'
+
 import { Providers } from '@/components/providers'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
@@ -22,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={cn(inter.className, 'antialiased')}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

@@ -18,10 +18,7 @@ function FiltersDrawer() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button
-          variant="outline"
-          className="flex w-full items-center gap-2 sm:w-auto"
-        >
+        <Button variant="outline">
           <SlidersHorizontal className="h-4 w-4" />
           Filters
         </Button>

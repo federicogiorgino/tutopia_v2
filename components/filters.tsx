@@ -1,7 +1,9 @@
 'use client'
 
 import { PostFormat, PostLevel, PostType } from '@prisma/client'
+import { useSearchParams } from 'next/navigation'
 import { useQueryState } from 'nuqs'
+import { use } from 'react'
 
 import { LANGUAGES } from '@/lib/constants'
 import { capitalizeFirstLetter } from '@/lib/utils'
@@ -17,7 +19,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+import { useFilters } from '@/hooks/use-filters'
+
 function Filters() {
+  const searchParams = useSearchParams()
+
+  const q = searchParams.get('q') || ''
+  const { data: filters, isLoading } = useFilters(q)
   const [_, setPage] = useQueryState('page', {
     defaultValue: 1,
     parse: (value) => {
@@ -27,7 +35,7 @@ function Filters() {
     serialize: (value) => value.toString(),
   })
 
-  const [perPage, setPerPage] = useQueryState('perPage', {
+  const [__, setPerPage] = useQueryState('perPage', {
     defaultValue: 10,
     parse: (value) => {
       const parsed = Number.parseInt(value, 10)
@@ -93,90 +101,106 @@ function Filters() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="mb-3 text-lg font-semibold">Language</h3>
-        <Select
-          value={language}
-          onValueChange={(value) => {
-            setLanguage(value)
-            setPage(1) // Reset page to 1 when language is changed
-          }}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select a language" />
-          </SelectTrigger>
-          <SelectContent>
-            {LANGUAGES.map((lang) => (
-              <SelectItem key={lang} value={lang}>
-                {capitalizeFirstLetter(lang)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <h3 className="mb-3 text-lg font-semibold">Type</h3>
-        <div className="space-y-2">
-          {Object.values(PostType).map((option) => (
-            <div key={option} className="flex items-center space-x-2">
-              <Checkbox
-                id={`type-${option}`}
-                checked={type === option}
-                onCheckedChange={(checked) =>
-                  handleSingleSelection(checked as boolean, option, setType)
-                }
-              />
-              <Label htmlFor={`type-${option}`}>
-                {capitalizeFirstLetter(option)}
-              </Label>
+      {isLoading ? (
+        <></>
+      ) : (
+        <>
+          {' '}
+          <div>
+            <h3 className="mb-3 text-lg font-semibold">Language</h3>
+            <Select
+              value={language}
+              onValueChange={(value) => {
+                setLanguage(value)
+                setPage(1) // Reset page to 1 when language is changed
+              }}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a language" />
+              </SelectTrigger>
+              <SelectContent>
+                {filters?.data?.languages.map((lang) => (
+                  <SelectItem key={lang.value} value={lang.value}>
+                    {capitalizeFirstLetter(lang.value)} ({lang.count})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <h3 className="mb-3 text-lg font-semibold">Type</h3>
+            <div className="space-y-2">
+              {filters?.data?.types.map((option) => (
+                <div key={option.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`type-${option.value}`}
+                    checked={type === option.value}
+                    onCheckedChange={(checked) =>
+                      handleSingleSelection(
+                        checked as boolean,
+                        option.value,
+                        setType
+                      )
+                    }
+                  />
+                  <Label htmlFor={`type-${option.value}`}>
+                    {capitalizeFirstLetter(option.value)} ({option.count})
+                  </Label>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="mb-3 text-lg font-semibold">Format</h3>
-        <div className="space-y-2">
-          {Object.values(PostFormat).map((option) => (
-            <div key={option} className="flex items-center space-x-2">
-              <Checkbox
-                id={`format-${option}`}
-                checked={format === option}
-                onCheckedChange={(checked) =>
-                  handleSingleSelection(checked as boolean, option, setFormat)
-                }
-              />
-              <Label htmlFor={`format-${option}`}>
-                {capitalizeFirstLetter(option)}
-              </Label>
+          </div>
+          <div>
+            <h3 className="mb-3 text-lg font-semibold">Format</h3>
+            <div className="space-y-2">
+              {filters?.data?.formats.map((option) => (
+                <div key={option.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`format-${option.value}`}
+                    checked={format === option.value}
+                    onCheckedChange={(checked) =>
+                      handleSingleSelection(
+                        checked as boolean,
+                        option.value,
+                        setFormat
+                      )
+                    }
+                  />
+                  <Label htmlFor={`format-${option.value}`}>
+                    {capitalizeFirstLetter(option.value)} ({option.count})
+                  </Label>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="mb-3 text-lg font-semibold">Level</h3>
-        <div className="space-y-2">
-          {Object.values(PostLevel).map((option) => (
-            <div key={option} className="flex items-center space-x-2">
-              <Checkbox
-                id={`level-${option}`}
-                checked={level === option}
-                onCheckedChange={(checked) =>
-                  handleSingleSelection(checked as boolean, option, setLevel)
-                }
-              />
-              <Label htmlFor={`level-${option}`}>
-                {capitalizeFirstLetter(option)}
-              </Label>
+          </div>
+          <div>
+            <h3 className="mb-3 text-lg font-semibold">Level</h3>
+            <div className="space-y-2">
+              {filters?.data?.levels.map((option) => (
+                <div key={option.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`level-${option.value}`}
+                    checked={level === option.value}
+                    onCheckedChange={(checked) =>
+                      handleSingleSelection(
+                        checked as boolean,
+                        option.value,
+                        setLevel
+                      )
+                    }
+                  />
+                  <Label htmlFor={`level-${option.value}`}>
+                    {capitalizeFirstLetter(option.value)} ({option.count})
+                  </Label>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-
-      <Button className="w-full" variant="outline" onClick={clearFilters}>
-        Clear Filters
-      </Button>
+          </div>
+          <Button className="w-full" variant="outline" onClick={clearFilters}>
+            Clear Filters
+          </Button>
+        </>
+      )}
     </div>
   )
 }
