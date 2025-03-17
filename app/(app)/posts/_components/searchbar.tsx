@@ -16,10 +16,7 @@ import {
 import { Input } from '@/components/ui/input'
 
 const searchSchema = z.object({
-  query: z
-    .string()
-    .min(1, 'Search keyword is required')
-    .max(100, 'Search keyword is too long'),
+  query: z.string().max(100, 'Search keyword is too long'),
 })
 
 type SearchFormData = z.infer<typeof searchSchema>

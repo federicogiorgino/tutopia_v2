@@ -1,7 +1,8 @@
 'use server'
 
-import { PostFormat, PostLevel, PostType, Prisma } from '@prisma/client'
+import { PostFormat, PostLevel, PostType } from '@prisma/client'
 
+import { postDataInclude } from '@/lib/db'
 import getSession from '@/lib/get-session'
 import { prisma } from '@/lib/prisma'
 
@@ -165,6 +166,7 @@ export const getPosts = async (
         },
         skip: (page - 1) * perPage,
         take: perPage,
+        include: postDataInclude,
       }),
 
       // Get total count for pagination

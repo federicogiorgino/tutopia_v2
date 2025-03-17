@@ -1,7 +1,13 @@
 'use client'
 
 import { PostFormat, PostLevel, PostType } from '@prisma/client'
+import { motion } from 'framer-motion'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+
+import { StaggerContainer } from '@/components/animations/stagger-container'
+import { StaggerItem } from '@/components/animations/stagger-item'
+import { Post } from '@/components/post'
 
 import { useSearchResults } from '@/hooks/use-search-results'
 
@@ -25,7 +31,20 @@ function SearchResults() {
   )
 
   return (
-    <div>{data?.data?.posts.map((el, i) => <div key={i}>{el.title}</div>)}</div>
+    <StaggerContainer className="mt-10 columns-1 gap-6 space-y-6 sm:columns-2 lg:columns-3">
+      {data?.data?.posts.map((post) => (
+        <StaggerItem key={post.id}>
+          <Link href={'/'}>
+            <motion.div
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              <Post post={post} />
+            </motion.div>
+          </Link>
+        </StaggerItem>
+      ))}
+    </StaggerContainer>
   )
 }
 
