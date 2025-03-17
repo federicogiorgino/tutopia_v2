@@ -6,6 +6,7 @@ import Link from 'next/link'
 
 import { PostData } from '@/lib/db'
 
+import { PostBadges } from './post-badges'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Card, CardContent, CardFooter } from './ui/card'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
@@ -16,12 +17,19 @@ interface PostProps {
 function Post({ post }: PostProps) {
   return (
     <Card className="overflow-hidden">
-      <CardContent className="space-y-2 p-5">
+      <CardContent className="space-y-3 p-5 py-3">
         <h3 className="line-clamp-2 text-xl font-bold">{post.title}</h3>
         <p className="text-muted-foreground line-clamp-3">{post.description}</p>
+        <PostBadges
+          format={post.format}
+          level={post.level}
+          type={post.type}
+          language={post.language}
+          year={post.year}
+        />
       </CardContent>
 
-      <CardFooter className="flex justify-between p-6 pt-0">
+      <CardFooter className="flex justify-between p-5 pt-0 pb-2">
         <div className="flex items-center gap-4">
           <motion.div
             className="flex items-center"
