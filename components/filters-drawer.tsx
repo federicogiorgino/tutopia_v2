@@ -1,6 +1,7 @@
 'use client'
 
 import { SlidersHorizontal } from 'lucide-react'
+import { Suspense } from 'react'
 
 import {
   Sheet,
@@ -11,7 +12,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 
-import { Filters } from './filters'
+import { Filters, FiltersSkeleton } from './filters'
 import { Button } from './ui/button'
 
 function FiltersDrawer() {
@@ -31,7 +32,9 @@ function FiltersDrawer() {
           </SheetDescription>
         </SheetHeader>
         <div className="px-8">
-          <Filters />
+          <Suspense fallback={<FiltersSkeleton />}>
+            <Filters />
+          </Suspense>
         </div>
       </SheetContent>
     </Sheet>

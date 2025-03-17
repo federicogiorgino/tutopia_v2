@@ -102,7 +102,7 @@ function Filters() {
   return (
     <div className="space-y-6">
       {isLoading ? (
-        <></>
+        <FiltersSkeleton />
       ) : (
         <>
           {' '}
@@ -204,4 +204,50 @@ function Filters() {
     </div>
   )
 }
-export { Filters }
+
+function FiltersSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="mb-3 text-lg font-semibold">Language</h3>
+        <div className="bg-muted h-10 w-full animate-pulse rounded-md" />
+      </div>
+      <div>
+        <h3 className="mb-3 text-lg font-semibold">Type</h3>
+        <div className="space-y-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center space-x-2">
+              <div className="bg-muted h-4 w-4 animate-pulse rounded" />
+              <div className="bg-muted h-4 w-24 animate-pulse rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h3 className="mb-3 text-lg font-semibold">Format</h3>
+        <div className="space-y-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center space-x-2">
+              <div className="bg-muted h-4 w-4 animate-pulse rounded" />
+              <div className="bg-muted h-4 w-24 animate-pulse rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h3 className="mb-3 text-lg font-semibold">Level</h3>
+        <div className="space-y-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center space-x-2">
+              <div className="bg-muted h-4 w-4 animate-pulse rounded" />
+              <div className="bg-muted h-4 w-24 animate-pulse rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="bg-muted h-10 w-full animate-pulse rounded-md" />
+    </div>
+  )
+}
+
+export { Filters, FiltersSkeleton }
