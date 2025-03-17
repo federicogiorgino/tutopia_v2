@@ -1,8 +1,13 @@
 'use server'
 
+import { NotificationType, PointsActivityType } from '@prisma/client'
+
 import getSession from '@/lib/get-session'
 import { prisma } from '@/lib/prisma'
 
+// Likes a post and handles related notifications and points
+// @param postId - The ID of the post to like
+// @returns Status object indicating success or failure
 export const likePost = async (postId: string) => {
   try {
     // Get the current session
@@ -16,6 +21,7 @@ export const likePost = async (postId: string) => {
       }
     }
 
+    // Find the post and get its author's ID
     const post = await prisma.post.findUnique({
       where: { id: postId },
       select: {
@@ -27,7 +33,9 @@ export const likePost = async (postId: string) => {
       return { status: 'error', error: 'Post not found' }
     }
 
+    // Execute all database operations in a transaction
     await prisma.$transaction([
+      // Create or update the like record
       prisma.like.upsert({
         where: {
           userId_postId: {
@@ -41,9 +49,27 @@ export const likePost = async (postId: string) => {
         },
         update: {},
       }),
+      // If the liker is not the post author, create notification and award points
       ...(session.user.id !== post.userId
         ? [
-            // will handle notifications & points
+            // Create notification for post author
+            prisma.notification.create({
+              data: {
+                recipientId: post.userId,
+                issuerId: session.user.id,
+                postId,
+                type: NotificationType.LIKE,
+              },
+            }),
+            // Award points to post author
+            prisma.points.create({
+              data: {
+                userId: post.userId,
+                points: 5,
+                activityType: PointsActivityType.LIKE_RECEIVED,
+                postId,
+              },
+            }),
           ]
         : []),
     ])
@@ -52,6 +78,10 @@ export const likePost = async (postId: string) => {
     return { status: 'error', message: 'There was a problem liking the post' }
   }
 }
+
+// Unlikes a post and removes related notifications and points
+// @param postId - The ID of the post to unlike
+// @returns Status object indicating success or failure
 
 export const unlikePost = async (postId: string) => {
   // Get the current session
@@ -65,6 +95,7 @@ export const unlikePost = async (postId: string) => {
     }
   }
 
+  // Find the post and get its author's ID
   const post = await prisma.post.findUnique({
     where: { id: postId },
     select: {
@@ -72,9 +103,32 @@ export const unlikePost = async (postId: string) => {
     },
   })
 
+  if (!post) {
+    return { status: 'error', error: 'Post not found' }
+  }
+
+  // Execute all database operations in a transaction
   await prisma.$transaction([
+    // Remove the like record
     prisma.like.deleteMany({
       where: { userId: session.user.id, postId },
+    }),
+    // Remove the notification
+    prisma.notification.deleteMany({
+      where: {
+        recipientId: post.userId,
+        issuerId: session.user.id,
+        postId,
+        type: NotificationType.LIKE,
+      },
+    }),
+    // Remove the points awarded
+    prisma.points.deleteMany({
+      where: {
+        postId,
+        userId: post.userId,
+        activityType: PointsActivityType.LIKE_RECEIVED,
+      },
     }),
   ])
   try {

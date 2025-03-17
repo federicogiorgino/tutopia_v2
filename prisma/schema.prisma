@@ -23,7 +23,11 @@ model User {
   accounts Account[]
   sessions Session[]
 
-  likes     Like[]
+  likes                 Like[]
+  points                Points[]
+  receivedNotifications Notification[] @relation("Recipient")
+  issuedNotifications   Notification[] @relation("Issuer")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -97,7 +101,9 @@ model Post {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  likes Like[]
+  likes         Like[]
+  notifications Notification[]
+  points        Points[]
 
   @@index([userId])
   @@map("posts")
@@ -111,6 +117,37 @@ model Like {
 
   @@unique([userId, postId])
   @@map("likes")
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  recipientId String
+  recipient   User             @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  issuerId    String
+  issuer      User             @relation("Issuer", fields: [issuerId], references: [id], onDelete: Cascade)
+  postId      String?
+  post        Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
+  type        NotificationType
+  read        Boolean          @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+model Points {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  points       Int
+  createdAt    DateTime           @default(now())
+  activityType PointsActivityType
+
+  post   Post?   @relation(fields: [postId], references: [id], onDelete: SetNull)
+  postId String?
+
+  @@map("points")
 }
 
 enum PostType {
@@ -132,4 +169,17 @@ enum PostLevel {
   INTERMEDIATE
   PROGRESSED
   ADVANCED
+}
+
+enum NotificationType {
+  LIKE
+  FOLLOW
+  COMMENT
+}
+
+enum PointsActivityType {
+  POST_CREATION
+  COMMENT
+  LIKE_RECEIVED
+  FOLLOWER_GAIN
 }
