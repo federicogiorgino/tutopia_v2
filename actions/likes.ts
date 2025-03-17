@@ -52,3 +52,34 @@ export const likePost = async (postId: string) => {
     return { status: 'error', message: 'There was a problem liking the post' }
   }
 }
+
+export const unlikePost = async (postId: string) => {
+  // Get the current session
+  const session = await getSession()
+
+  // Check if user is authenticated
+  if (!session || !session.user.id) {
+    return {
+      status: 'error',
+      error: 'You must be logged in to perform this action',
+    }
+  }
+
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    select: {
+      userId: true,
+    },
+  })
+
+  await prisma.$transaction([
+    prisma.like.deleteMany({
+      where: { userId: session.user.id, postId },
+    }),
+  ])
+  try {
+    return { status: 'success', message: 'Post unliked successfully' }
+  } catch (error) {
+    return { status: 'error', message: 'There was a problem unliking the post' }
+  }
+}
