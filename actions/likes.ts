@@ -5,6 +5,54 @@ import { NotificationType, PointsActivityType } from '@prisma/client'
 import getSession from '@/lib/get-session'
 import { prisma } from '@/lib/prisma'
 
+export const getLikes = async (postId: string) => {
+  try {
+    // Get the current session
+    const session = await getSession()
+
+    // Check if user is authenticated
+    if (!session || !session.user.id) {
+      return {
+        status: 'error',
+        error: 'You must be logged in to perform this action',
+      }
+    }
+
+    // Find the post and get its author's ID, the likes and the count of likes
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: {
+        likes: {
+          where: {
+            userId: session.user.id,
+          },
+          select: {
+            userId: true,
+          },
+        },
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
+      },
+    })
+
+    if (!post) {
+      return { status: 'error', error: 'Post not found' }
+    }
+
+    const data: { likes: number; isLikedByUser: boolean } = {
+      likes: post._count.likes,
+      isLikedByUser: !!post.likes.length,
+    }
+
+    return { status: 'success', data }
+  } catch (error) {
+    return { status: 'error', message: 'There was a problem getting the likes' }
+  }
+}
+
 // Likes a post and handles related notifications and points
 // @param postId - The ID of the post to like
 // @returns Status object indicating success or failure
