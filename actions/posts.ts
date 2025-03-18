@@ -2,7 +2,7 @@
 
 import { PostFormat, PostLevel, PostType } from '@prisma/client'
 
-import { postDataInclude } from '@/lib/db'
+import { getPostDataInclude, userDataInclude } from '@/lib/db'
 import getSession from '@/lib/get-session'
 import { prisma } from '@/lib/prisma'
 
@@ -144,6 +144,7 @@ export const getPosts = async (
 ) => {
   try {
     // Get paginated posts with filters
+    const session = await getSession()
     const [results, totalCount] = await Promise.all([
       prisma.post.findMany({
         where: {
@@ -166,7 +167,7 @@ export const getPosts = async (
         },
         skip: (page - 1) * perPage,
         take: perPage,
-        include: postDataInclude,
+        include: getPostDataInclude(session?.user.id),
       }),
 
       // Get total count for pagination

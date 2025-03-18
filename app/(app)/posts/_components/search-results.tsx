@@ -34,7 +34,7 @@ function SearchResults() {
     <StaggerContainer className="mt-10 columns-1 gap-6 space-y-6 sm:columns-2 lg:columns-3">
       {data?.data?.posts.map((post) => (
         <StaggerItem key={post.id}>
-          <Link href={'/'}>
+          <Link href={`/posts/${post.id}`}>
             <motion.div
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 300 }}

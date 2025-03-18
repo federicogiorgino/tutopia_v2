@@ -5,6 +5,8 @@ import { NotificationType, PointsActivityType } from '@prisma/client'
 import getSession from '@/lib/get-session'
 import { prisma } from '@/lib/prisma'
 
+import { LikeInfo } from '@/types/likes'
+
 export const getLikes = async (postId: string) => {
   try {
     // Get the current session
@@ -42,7 +44,7 @@ export const getLikes = async (postId: string) => {
       return { status: 'error', error: 'Post not found' }
     }
 
-    const data: { likes: number; isLikedByUser: boolean } = {
+    const data: LikeInfo = {
       likes: post._count.likes,
       isLikedByUser: !!post.likes.length,
     }
@@ -132,54 +134,54 @@ export const likePost = async (postId: string) => {
 // @returns Status object indicating success or failure
 
 export const unlikePost = async (postId: string) => {
-  // Get the current session
-  const session = await getSession()
-
-  // Check if user is authenticated
-  if (!session || !session.user.id) {
-    return {
-      status: 'error',
-      error: 'You must be logged in to perform this action',
-    }
-  }
-
-  // Find the post and get its author's ID
-  const post = await prisma.post.findUnique({
-    where: { id: postId },
-    select: {
-      userId: true,
-    },
-  })
-
-  if (!post) {
-    return { status: 'error', error: 'Post not found' }
-  }
-
-  // Execute all database operations in a transaction
-  await prisma.$transaction([
-    // Remove the like record
-    prisma.like.deleteMany({
-      where: { userId: session.user.id, postId },
-    }),
-    // Remove the notification
-    prisma.notification.deleteMany({
-      where: {
-        recipientId: post.userId,
-        issuerId: session.user.id,
-        postId,
-        type: NotificationType.LIKE,
-      },
-    }),
-    // Remove the points awarded
-    prisma.points.deleteMany({
-      where: {
-        postId,
-        userId: post.userId,
-        activityType: PointsActivityType.LIKE_RECEIVED,
-      },
-    }),
-  ])
   try {
+    // Get the current session
+    const session = await getSession()
+
+    // Check if user is authenticated
+    if (!session || !session.user.id) {
+      return {
+        status: 'error',
+        error: 'You must be logged in to perform this action',
+      }
+    }
+
+    // Find the post and get its author's ID
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: {
+        userId: true,
+      },
+    })
+
+    if (!post) {
+      return { status: 'error', error: 'Post not found' }
+    }
+
+    // Execute all database operations in a transaction
+    await prisma.$transaction([
+      // Remove the like record
+      prisma.like.deleteMany({
+        where: { userId: session.user.id, postId },
+      }),
+      // Remove the notification
+      prisma.notification.deleteMany({
+        where: {
+          recipientId: post.userId,
+          issuerId: session.user.id,
+          postId,
+          type: NotificationType.LIKE,
+        },
+      }),
+      // Remove the points awarded
+      prisma.points.deleteMany({
+        where: {
+          postId,
+          userId: post.userId,
+          activityType: PointsActivityType.LIKE_RECEIVED,
+        },
+      }),
+    ])
     return { status: 'success', message: 'Post unliked successfully' }
   } catch (error) {
     return { status: 'error', message: 'There was a problem unliking the post' }
