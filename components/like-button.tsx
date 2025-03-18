@@ -7,15 +7,17 @@ import { toast } from 'sonner'
 
 import { cn } from '@/lib/utils'
 
+import { Button } from './ui/button'
 import { getLikes, likePost, unlikePost } from '@/actions/likes'
 import { LikeInfo } from '@/types/likes'
 
 interface LikeButtonProps {
+  isLarge?: boolean
   postId: string
   initialState: LikeInfo
 }
 
-function LikeButton({ postId, initialState }: LikeButtonProps) {
+function LikeButton({ postId, initialState, isLarge }: LikeButtonProps) {
   const queryClient = useQueryClient()
 
   const { data } = useQuery({
@@ -41,31 +43,58 @@ function LikeButton({ postId, initialState }: LikeButtonProps) {
       // Return context for rollback
       return { oldData }
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['postDetails', postId] })
+    },
     onError() {
       toast.error('Something went wrong. Try again')
     },
   })
+
+  const isLiked = data?.data?.isLikedByUser ?? initialState.isLikedByUser
+  const likesCount = data?.data?.likes ?? initialState.likes
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    mutate()
+  }
+
+  if (isLarge) {
+    return (
+      <Button
+        variant={isLiked ? 'default' : 'outline'}
+        onClick={handleClick}
+        className="hover:cursor-pointer"
+      >
+        <motion.div
+          animate={isLiked ? { scale: [1, 1.2, 1] } : {}}
+          transition={{ duration: 0.3 }}
+        >
+          <Heart
+            className={cn('mr-2 h-4 w-4', {
+              'fill-current': isLiked,
+            })}
+          />
+        </motion.div>
+        {likesCount} likes
+      </Button>
+    )
+  }
+
   return (
     <div
-      className="flex cursor-pointer items-center"
-      onClick={(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        mutate()
-      }}
-      // whileHover={{ scale: 1.1 }}
-      // whileTap={{ scale: 0.9 }}
+      className="flex items-center hover:cursor-pointer"
+      onClick={handleClick}
     >
       <Heart
-        className={cn(
-          'mr-1 h-4 w-4',
-          (data?.data?.isLikedByUser ?? initialState.isLikedByUser)
-            ? 'fill-primary text-primary'
-            : 'text-muted-foreground'
-        )}
+        className={cn('mr-1 h-4 w-4', {
+          'fill-primary text-primary': isLiked,
+          'text-muted-foreground': !isLiked,
+        })}
       />
       <span className="text-muted-foreground text-sm tabular-nums">
-        {data?.data?.likes ?? initialState.likes}
+        {likesCount}
       </span>
     </div>
   )
