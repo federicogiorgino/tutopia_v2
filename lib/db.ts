@@ -7,16 +7,38 @@ export const userDataInclude = {
   bio: true,
   image: true,
   createdAt: true,
+  _count: {
+    select: {
+      posts: true,
+    },
+  },
 } satisfies Prisma.UserSelect
 
-export const postDataInclude = {
-  user: {
-    select: userDataInclude,
-  },
-} satisfies Prisma.PostInclude
-
+export const getPostDataInclude = (userId?: string) => {
+  return {
+    user: {
+      select: userDataInclude,
+    },
+    likes: userId
+      ? {
+          where: {
+            userId,
+          },
+          select: {
+            userId: true,
+          },
+        }
+      : {},
+    _count: {
+      select: {
+        likes: true,
+        // comments: true
+      },
+    },
+  } satisfies Prisma.PostInclude
+}
 export type PostData = Prisma.PostGetPayload<{
-  include: typeof postDataInclude
+  include: ReturnType<typeof getPostDataInclude>
 }>
 
 export type UserData = Prisma.UserGetPayload<{
