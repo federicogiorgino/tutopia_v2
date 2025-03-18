@@ -46,15 +46,15 @@ function LikeButton({ postId, initialState }: LikeButtonProps) {
     },
   })
   return (
-    <motion.div
+    <div
       className="flex cursor-pointer items-center"
       onClick={(e) => {
         e.preventDefault()
         e.stopPropagation()
         mutate()
       }}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
+      // whileHover={{ scale: 1.1 }}
+      // whileTap={{ scale: 0.9 }}
     >
       <Heart
         className={cn(
@@ -67,7 +67,7 @@ function LikeButton({ postId, initialState }: LikeButtonProps) {
       <span className="text-muted-foreground text-sm tabular-nums">
         {data?.data?.likes ?? initialState.likes}
       </span>
-    </motion.div>
+    </div>
   )
 }
 
