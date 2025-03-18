@@ -11,7 +11,7 @@ import { NewPostValues } from '@/types/post'
 
 // Creates a new post in the database
 // @param data The post data to create
-// returns Object containing status and message/error
+// @returns Object containing status and message/error
 
 export const createPost = async (data: NewPostValues) => {
   try {
@@ -49,6 +49,10 @@ export const createPost = async (data: NewPostValues) => {
     return { status: 'error', error: 'Failed to create post' }
   }
 }
+
+// Gets filter options and their counts based on existing posts
+// @param q Optional search query to filter results
+// @returns Object containing counts for each filter type
 
 export const getFilters = async (q?: string) => {
   try {
@@ -131,6 +135,12 @@ export const getFilters = async (q?: string) => {
   }
 }
 
+// Gets paginated posts with optional filters
+// @param filters Object containing filter criteria
+// @param page Current page number
+// @param perPage Number of posts per page
+// @returns Object containing posts and pagination info
+
 export const getPosts = async (
   filters: {
     q: string
@@ -199,6 +209,33 @@ export const getPosts = async (
         posts: results,
         totalPages: Math.ceil(totalCount / perPage),
       },
+    }
+  } catch (error) {
+    return { status: 'error', error: 'Failed to get posts' }
+  }
+}
+
+// Gets a single post by ID
+// @param postId The ID of the post to retrieve
+// @returns Object containing the post data or error
+
+export const getPost = async (postId: string) => {
+  try {
+    const session = await getSession()
+
+    const post = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+      include: getPostDataInclude(session?.user.id),
+    })
+
+    if (!post) {
+      return { status: 'success', error: 'Post not found' }
+    }
+    return {
+      status: 'success',
+      data: post,
     }
   } catch (error) {
     return { status: 'error', error: 'Failed to get posts' }
