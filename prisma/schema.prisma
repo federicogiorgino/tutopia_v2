@@ -27,6 +27,7 @@ model User {
   points                Points[]
   receivedNotifications Notification[] @relation("Recipient")
   issuedNotifications   Notification[] @relation("Issuer")
+  comments              Comment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -104,6 +105,7 @@ model Post {
   likes         Like[]
   notifications Notification[]
   points        Points[]
+  comments      Comment[]
 
   @@index([userId])
   @@map("posts")
@@ -129,6 +131,8 @@ model Notification {
   post        Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
   type        NotificationType
   read        Boolean          @default(false)
+  comment     Comment?         @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId   String?          @map("commentId") // Optional for flexibility
 
   createdAt DateTime @default(now())
 
@@ -148,6 +152,29 @@ model Points {
   postId String?
 
   @@map("points")
+}
+
+model Comment {
+  id String @id @default(cuid()) @map("_id")
+
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @map("userId")
+
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String
+
+  parent   Comment? @relation("ParentChild", fields: [parentId], references: [id])
+  parentId String?
+
+  children      Comment[]      @relation("ParentChild")
+  notifications Notification[]
+
+  @@index([userId, postId])
+  @@map("comments")
 }
 
 enum PostType {
@@ -175,6 +202,7 @@ enum NotificationType {
   LIKE
   FOLLOW
   COMMENT
+  REPLY
 }
 
 enum PointsActivityType {

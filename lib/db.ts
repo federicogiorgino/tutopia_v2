@@ -10,6 +10,7 @@ export const userDataInclude = {
   _count: {
     select: {
       posts: true,
+      comments: true
     },
   },
 } satisfies Prisma.UserSelect
@@ -32,7 +33,7 @@ export const getPostDataInclude = (userId?: string) => {
     _count: {
       select: {
         likes: true,
-        // comments: true
+        comments: true,
       },
     },
   } satisfies Prisma.PostInclude

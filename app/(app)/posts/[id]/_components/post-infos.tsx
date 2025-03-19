@@ -148,7 +148,7 @@ function PostInfos({ post }: PostInfosProps) {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Comments</span>
-                    {/* <span className="font-medium">{post._count.comments}</span> */}
+                    <span className="font-medium">{post._count.comments}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Added</span>
