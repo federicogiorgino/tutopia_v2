@@ -2,7 +2,7 @@
 
 import { PostFormat, PostLevel, PostType } from '@prisma/client'
 
-import { getPostDataInclude, userDataInclude } from '@/lib/db'
+import { getPostDataInclude } from '@/lib/db'
 import getSession from '@/lib/get-session'
 import { prisma } from '@/lib/prisma'
 
