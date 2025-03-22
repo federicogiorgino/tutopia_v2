@@ -17,6 +17,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 
+import { CommentsList } from './comments-list'
+
 interface PostInfosProps {
   post: PostData
 }
@@ -87,6 +89,8 @@ function PostInfos({ post }: PostInfosProps) {
             </div>
           </FadeIn>
           <Separator />
+
+          <CommentsList postId={post.id} />
         </div>
 
         <div className="space-y-6">

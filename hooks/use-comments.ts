@@ -15,6 +15,7 @@ export const useComments = (postId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments', postId] })
       queryClient.invalidateQueries({ queryKey: ['postDetails', postId] })
+      queryClient.invalidateQueries({ queryKey: ['searchResults'] })
     },
   })
 
