@@ -3,7 +3,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
@@ -41,7 +40,7 @@ function CommentForm({ postId, parentId, setShowReplyForm }: CommentFormProps) {
     },
   })
 
-  const { mutation } = useComments(postId)
+  const { mutation } = useComments(postId, parentId)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!session) {
@@ -73,7 +72,9 @@ function CommentForm({ postId, parentId, setShowReplyForm }: CommentFormProps) {
             <FormItem>
               <FormControl>
                 <Textarea
-                  placeholder="Write a comment..."
+                  placeholder={
+                    parentId ? 'Write a reply...' : 'Write a comment...'
+                  }
                   className="resize-none"
                   {...field}
                 />
@@ -83,11 +84,29 @@ function CommentForm({ postId, parentId, setShowReplyForm }: CommentFormProps) {
           )}
         />
         <Button type="submit" disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? 'Submitting...' : 'Submit'}
+          {form.formState.isSubmitting ? (
+            <>
+              <div className="border-primary mr-2 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
+              {parentId ? 'Replying...' : 'Commenting...'}
+            </>
+          ) : parentId ? (
+            'Reply'
+          ) : (
+            'Comment'
+          )}
         </Button>
       </form>
     </Form>
   )
 }
 
-export { CommentForm }
+function CommentFormSkeleton() {
+  return (
+    <div className="space-y-4">
+      <div className="bg-muted h-24 w-full animate-pulse rounded-lg" />
+      <div className="bg-muted h-9 w-24 animate-pulse rounded-md" />
+    </div>
+  )
+}
+
+export { CommentForm, CommentFormSkeleton }

@@ -2,7 +2,7 @@
 
 import { NotificationType, PointsActivityType } from '@prisma/client'
 
-import { getCommentDataInclude } from '@/lib/db'
+import { getCommentDataInclude, getUserDataInclude } from '@/lib/db'
 import getSession from '@/lib/get-session'
 import { prisma } from '@/lib/prisma'
 
@@ -103,6 +103,30 @@ export const fetchComments = async (postId: string) => {
   } catch (error) {
     return {
       status: 'error',
+      error: 'Failed to fetch comments',
+    }
+  }
+}
+
+export async function fetchReplies(postId: string, parentId: string) {
+  try {
+    const replies = await prisma.comment.findMany({
+      where: {
+        postId,
+        parentId,
+      },
+      include: getCommentDataInclude(),
+      orderBy: {
+        createdAt: 'asc',
+      },
+    })
+    return {
+      success: true,
+      data: replies,
+    }
+  } catch (error) {
+    return {
+      success: false,
       error: 'Failed to fetch comments',
     }
   }

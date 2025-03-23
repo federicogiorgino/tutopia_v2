@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { createComment, fetchComments } from '@/actions/comments'
 
-export const useComments = (postId: string) => {
+export const useComments = (postId: string, commentId?: string) => {
   const queryClient = useQueryClient()
 
   const { data, isLoading, isError } = useQuery({
@@ -14,6 +14,9 @@ export const useComments = (postId: string) => {
     mutationFn: createComment,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments', postId] })
+      queryClient.invalidateQueries({
+        queryKey: ['replies', postId, commentId],
+      })
       queryClient.invalidateQueries({ queryKey: ['postDetails', postId] })
       queryClient.invalidateQueries({ queryKey: ['searchResults'] })
     },
