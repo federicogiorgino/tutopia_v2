@@ -29,6 +29,7 @@ function PostInfos({ post }: PostInfosProps) {
     navigator.clipboard.writeText(window.location.href)
     toast.success('Link copied to clipboard')
   }
+
   return (
     <FadeIn className="container py-8">
       <div className="grid gap-8 md:grid-cols-[1fr_300px]">
