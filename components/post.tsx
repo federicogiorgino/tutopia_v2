@@ -47,7 +47,9 @@ function Post({ post }: PostProps) {
 
           <div className="flex items-center">
             <MessageSquare className="text-muted-foreground mr-1 h-4 w-4" />
-            <span className="text-muted-foreground text-sm">1 </span>
+            <span className="text-muted-foreground text-sm">
+              {post._count.comments}
+            </span>
           </div>
         </div>
 

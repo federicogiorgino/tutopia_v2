@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client'
 
-export const userDataInclude = {
+export const getUserDataInclude = {
   id: true,
   username: true,
   name: true,
@@ -10,6 +10,7 @@ export const userDataInclude = {
   _count: {
     select: {
       posts: true,
+      comments: true,
     },
   },
 } satisfies Prisma.UserSelect
@@ -17,7 +18,7 @@ export const userDataInclude = {
 export const getPostDataInclude = (userId?: string) => {
   return {
     user: {
-      select: userDataInclude,
+      select: getUserDataInclude,
     },
     likes: userId
       ? {
@@ -32,15 +33,30 @@ export const getPostDataInclude = (userId?: string) => {
     _count: {
       select: {
         likes: true,
-        // comments: true
+        comments: true,
       },
     },
   } satisfies Prisma.PostInclude
 }
+export function getCommentDataInclude() {
+  return {
+    user: {
+      select: getUserDataInclude,
+    },
+    _count: {
+      select: { children: true },
+    },
+  } satisfies Prisma.CommentInclude
+}
+
 export type PostData = Prisma.PostGetPayload<{
   include: ReturnType<typeof getPostDataInclude>
 }>
 
 export type UserData = Prisma.UserGetPayload<{
-  select: typeof userDataInclude
+  select: typeof getUserDataInclude
+}>
+
+export type CommentData = Prisma.CommentGetPayload<{
+  include: ReturnType<typeof getCommentDataInclude>
 }>

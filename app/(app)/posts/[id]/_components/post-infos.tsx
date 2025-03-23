@@ -4,6 +4,7 @@ import { format } from 'date-fns'
 import { motion } from 'framer-motion'
 import { ExternalLink, Share2 } from 'lucide-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 import { PostData } from '@/lib/db'
 import { formatDate } from '@/lib/utils'
@@ -17,11 +18,17 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 
+import { CommentsList, CommentsListSkeleton } from './comments-list'
+
 interface PostInfosProps {
   post: PostData
 }
 
 function PostInfos({ post }: PostInfosProps) {
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href)
+    toast.success('Link copied to clipboard')
+  }
   return (
     <FadeIn className="container py-8">
       <div className="grid gap-8 md:grid-cols-[1fr_300px]">
@@ -79,7 +86,7 @@ function PostInfos({ post }: PostInfosProps) {
                 />
               </ButtonAnimation>
               <ButtonAnimation>
-                <Button variant="outline">
+                <Button variant="outline" onClick={handleShare}>
                   <Share2 className="mr-2 h-4 w-4" />
                   Share
                 </Button>
@@ -87,6 +94,8 @@ function PostInfos({ post }: PostInfosProps) {
             </div>
           </FadeIn>
           <Separator />
+
+          <CommentsList postId={post.id} />
         </div>
 
         <div className="space-y-6">
@@ -148,7 +157,7 @@ function PostInfos({ post }: PostInfosProps) {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Comments</span>
-                    {/* <span className="font-medium">{post._count.comments}</span> */}
+                    <span className="font-medium">{post._count.comments}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Added</span>
@@ -201,45 +210,43 @@ function PostInfosSkeleton() {
             </div>
           </FadeIn>
           <Separator />
+
+          <CommentsListSkeleton />
         </div>
 
         <div className="space-y-6">
-          <FadeIn delay={0.2}>
-            <Card>
-              <CardHeader>
-                <h3 className="text-center text-lg font-bold">
-                  About the Author
-                </h3>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col items-center text-center">
-                  <div className="bg-muted mb-4 h-20 w-20 animate-pulse rounded-full" />
-                  <div className="bg-muted mb-2 h-6 w-40 animate-pulse rounded-md" />
-                  <div className="bg-muted mb-4 h-4 w-24 animate-pulse rounded-md" />
-                  <div className="bg-muted mb-4 h-16 w-full animate-pulse rounded-md" />
-                  <div className="bg-muted h-10 w-full animate-pulse rounded-md" />
-                </div>
-              </CardContent>
-            </Card>
-          </FadeIn>
+          <Card className="border-0">
+            <CardHeader>
+              <h3 className="text-center text-lg font-bold">
+                About the Author
+              </h3>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col items-center text-center">
+                <div className="bg-muted mb-4 h-20 w-20 animate-pulse rounded-full" />
+                <div className="bg-muted mb-2 h-6 w-40 animate-pulse rounded-md" />
+                <div className="bg-muted mb-4 h-4 w-24 animate-pulse rounded-md" />
+                <div className="bg-muted mb-4 h-16 w-full animate-pulse rounded-md" />
+                <div className="bg-muted h-10 w-full animate-pulse rounded-md" />
+              </div>
+            </CardContent>
+          </Card>
 
-          <FadeIn delay={0.3}>
-            <Card>
-              <CardHeader>
-                <h3 className="text-lg font-bold">Post Stats</h3>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex justify-between">
-                      <div className="bg-muted h-4 w-20 animate-pulse rounded-md" />
-                      <div className="bg-muted h-4 w-12 animate-pulse rounded-md" />
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </FadeIn>
+          <Card className="border-0">
+            <CardHeader>
+              <h3 className="text-lg font-bold">Post Stats</h3>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex justify-between">
+                    <div className="bg-muted h-4 w-20 animate-pulse rounded-md" />
+                    <div className="bg-muted h-4 w-12 animate-pulse rounded-md" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </FadeIn>
