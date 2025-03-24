@@ -32,46 +32,52 @@ function SearchResults() {
     itemsPerPage
   )
 
+  const posts = data?.data?.posts
+
+  if (isLoading) {
+    return <SearchResultsSkeleton />
+  }
+
+  if (isError) {
+    return (
+      <div className="mt-10">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle className="font-bold">Error</AlertTitle>
+          <AlertDescription>
+            There was an error loading the search results. Please try again
+            later.
+          </AlertDescription>
+        </Alert>
+      </div>
+    )
+  }
+
+  if (!posts || posts.length === 0) {
+    return (
+      <StaggerContainer className="mt-10 columns-1 gap-6 space-y-6 sm:columns-2 lg:columns-3">
+        <p className="text-muted-foreground max-sm:text-center">
+          No results found. Try adjusting your filters.
+        </p>
+      </StaggerContainer>
+    )
+  }
+
   return (
-    <>
-      {isLoading ? (
-        <SearchResultsSkeleton />
-      ) : isError ? (
-        <div className="mt-10">
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle className="font-bold">Error</AlertTitle>
-            <AlertDescription>
-              There was an error loading the search results. Please try again
-              later.
-            </AlertDescription>
-          </Alert>
-        </div>
-      ) : (
-        <>
-          <StaggerContainer className="mt-10 columns-1 gap-6 space-y-6 sm:columns-2 lg:columns-3">
-            {(data?.data?.posts ?? []).length > 0 ? (
-              (data?.data?.posts ?? []).map((post) => (
-                <StaggerItem key={post.id}>
-                  <Link href={`/posts/${post.id}`}>
-                    <motion.div
-                      whileHover={{ y: -5 }}
-                      transition={{ type: 'spring', stiffness: 300 }}
-                    >
-                      <Post post={post} />
-                    </motion.div>
-                  </Link>
-                </StaggerItem>
-              ))
-            ) : (
-              <p className="text-muted-foreground max-sm:text-center">
-                No results found. Try adjusting your filters.
-              </p>
-            )}
-          </StaggerContainer>
-        </>
-      )}
-    </>
+    <StaggerContainer className="mt-10 columns-1 gap-6 space-y-6 sm:columns-2 lg:columns-3">
+      {posts.map((post) => (
+        <StaggerItem key={post.id}>
+          <Link href={`/posts/${post.id}`}>
+            <motion.div
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              <Post post={post} />
+            </motion.div>
+          </Link>
+        </StaggerItem>
+      ))}
+    </StaggerContainer>
   )
 }
 

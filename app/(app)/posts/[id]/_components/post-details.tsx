@@ -22,25 +22,28 @@ function PostDetails({ postId }: PostDetailsProps) {
   const invalidComments = !commentsData || !commentsData.data
   const isLoadingAll = isLoading || isCommentsLoading
   const isInvalid = invalidDetails || invalidComments
-  return (
-    <>
-      {isLoadingAll ? (
-        <PostInfosSkeleton />
-      ) : isError ? (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            There was an error loading the content. Please try again later.
-          </AlertDescription>
-        </Alert>
-      ) : isInvalid ? (
-        notFound()
-      ) : (
-        <PostInfos post={data.data} />
-      )}
-    </>
-  )
+
+  if (isLoadingAll) {
+    return <PostInfosSkeleton />
+  }
+
+  if (isError) {
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>
+          There was an error loading the content. Please try again later.
+        </AlertDescription>
+      </Alert>
+    )
+  }
+
+  if (isInvalid) {
+    notFound()
+  }
+
+  return <PostInfos post={data.data} />
 }
 
 export { PostDetails }

@@ -22,7 +22,7 @@ function CommentsList({ postId }: CommentsListProps) {
         {data?.data?.map((comment) => (
           <CommentItem key={comment.id} comment={comment} postId={postId} />
         ))}
-        {!data?.data?.length && (
+        {data?.data?.length === 0 && (
           <p>No comments yet. Be the first to comment!</p>
         )}
       </div>
