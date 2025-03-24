@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 import { PostInfos, PostInfosSkeleton } from './post-infos'
+import { useComments } from '@/hooks/use-comments'
 import { usePostDetails } from '@/hooks/use-post-details'
 
 interface PostDetailsProps {
@@ -14,12 +15,16 @@ interface PostDetailsProps {
 
 function PostDetails({ postId }: PostDetailsProps) {
   const { data, isLoading, isError } = usePostDetails(postId)
+  const { data: commentsData, isLoading: isCommentsLoading } =
+    useComments(postId)
 
   const invalidDetails = !data || !data.data
-  const isInvalid = invalidDetails
+  const invalidComments = !commentsData || !commentsData.data
+  const isLoadingAll = isLoading || isCommentsLoading
+  const isInvalid = invalidDetails || invalidComments
   return (
     <>
-      {isLoading ? (
+      {isLoadingAll ? (
         <PostInfosSkeleton />
       ) : isError ? (
         <Alert variant="destructive">

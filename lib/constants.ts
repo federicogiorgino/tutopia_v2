@@ -1,5 +1,5 @@
 export const NAV_LINKS = [
-  { label: 'Leaderboard', href: '/leaderboard' },
+  { label: 'Leaderboard', href: '/leaderboards' },
   { label: 'Explore', href: '/posts' },
   { label: 'About', href: '/about' },
 ]
