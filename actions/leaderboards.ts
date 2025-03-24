@@ -4,8 +4,6 @@ import { prisma } from '@/lib/prisma'
 
 import { ActivityType, DateRange } from '@/types/leaderboards'
 
-// Server action to fetch leaderboard data based on activity type and date range
-
 export const getLeaderboards = async (
   type: ActivityType,
   dateRange: DateRange
@@ -84,24 +82,29 @@ export const getLeaderboards = async (
       },
       select: {
         id: true,
-        name: true,
+        username: true,
         image: true,
+        name: true,
       },
     })
 
     // Create a map of user details for easy lookup
     const userMap = new Map(
-      users.map((user) => [user.id, { name: user.name, image: user.image }])
+      users.map((user) => [
+        user.id,
+        { name: user.name, image: user.image, username: user.username },
+      ])
     )
 
     // Return formatted leaderboard data
     return {
-      success: true,
+      status: 'success',
       data: leaderboard.map((entry) => {
         const user = userMap.get(entry.userId)
         return {
           userId: entry.userId,
-          username: user?.name || 'Anonymous',
+          username: user?.username || 'Anonymous',
+          name: user?.name || 'Anonymous',
           image: user?.image || null,
           totalPoints: entry._sum.points || 0,
         }
@@ -109,6 +112,6 @@ export const getLeaderboards = async (
     }
   } catch (error) {
     // Return error response if something goes wrong
-    return { success: false, error: 'Failed to fetch leaderboard' }
+    return { status: 'error', error: 'Failed to fetch leaderboard' }
   }
 }

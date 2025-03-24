@@ -19,11 +19,12 @@ function CommentsList({ postId }: CommentsListProps) {
       <CommentForm postId={postId} />
 
       <div className="mt-10 grid gap-4">
-        {(data?.data ?? []).length > 0
-          ? (data?.data ?? []).map((comment) => (
-              <CommentItem key={comment.id} comment={comment} postId={postId} />
-            ))
-          : 'No comments yet. Be the first to comment!'}
+        {data?.data?.map((comment) => (
+          <CommentItem key={comment.id} comment={comment} postId={postId} />
+        ))}
+        {!data?.data?.length && (
+          <p>No comments yet. Be the first to comment!</p>
+        )}
       </div>
     </div>
   )

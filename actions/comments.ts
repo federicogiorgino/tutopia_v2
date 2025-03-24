@@ -121,12 +121,12 @@ export async function fetchReplies(postId: string, parentId: string) {
       },
     })
     return {
-      success: true,
+      status: 'success',
       data: replies,
     }
   } catch (error) {
     return {
-      success: false,
+      status: 'error',
       error: 'Failed to fetch comments',
     }
   }
